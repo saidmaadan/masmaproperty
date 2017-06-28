@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const listingController = require('../controllers/listingController');
 
 // Do work here
-router.get('/', (req, res) => {
-  res.send('Hey! It works!');
-});
+router.get('/', listingController.homePage);
 
 module.exports = router;
