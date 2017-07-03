@@ -1,0 +1,10 @@
+mixin listingCard(listing = {})
+  .store
+    .store__hero
+      .store__actions
+        button soon
+      img(src=`uploads/${listing.photo || 'store.png'}`)
+      h2.title
+        a(href=`/listing/${listing.slug}`) #{listing.title}
+    .store.details
+      p= listing.description.split('').slice(0, 25).join('')

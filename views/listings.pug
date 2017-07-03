@@ -1,0 +1,9 @@
+extends layout
+
+include mixins/_listingCard
+block content
+  .inner
+    h2= title
+    .stores
+      each listing in listings
+        +listingCard(listing)
