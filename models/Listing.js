@@ -15,6 +15,7 @@ const listingSchema = new mongoose.Schema({
   },
   slug: String,
   tags: [String],
+  pic: [String],
   created: {
     type: Date,
     default: Date.now

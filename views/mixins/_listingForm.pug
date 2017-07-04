@@ -1,5 +1,5 @@
 mixin listingForm(listing = {})
-  form(action=`/add/${listing._id || ''}` method="POST" class="card")
+  form(action=`/add/${listing._id || ''}` method="POST" class="card" enctype="multipart/form-data")
     label(for="title") Title
     input(type="text" name="title" value=listing.title)
     label(for="description") Description
@@ -7,9 +7,9 @@ mixin listingForm(listing = {})
     label(for="address") Address
     input(type="text" id="address" name="location[address]" value=(listing.location && listing.location.address))
     label(for="lng") Address Lng
-    input(type="text" id="lng" name="location[coordinates[0]]" value=(listing.location && listing.location.coordinates[0]) required)
+    input(type="text" id="lng" name="location[coordinates][0]" value=(listing.location && listing.location.coordinates[0]) required)
     label(for="lat") Address Lat
-    input(type="text" id="lat" name="location[coordinates[1]]" value=(listing.location && listing.location.coordinates[1]) required)
+    input(type="text" id="lat" name="location[coordinates][1]" value=(listing.location && listing.location.coordinates[1]) required)
     - const choices = ['Apartment', 'Single Home', 'Duplex']
     - const tags = listing.tags || []
     ul.tags
@@ -17,5 +17,10 @@ mixin listingForm(listing = {})
         .tag.tag__choice
           input(type="checkbox" id=choice value=choice name="tags" checked=(tags.includes(choice)))
           label(for=choice) #{choice}
+    label(for="pic") Picture
+      input(type="file" name="pic" id="pic" accept="image/gif", "image/jpeg", "image/png")
+      if(listing.pic)
+        img(src=`/uploads/${listing.pic}`, alt=listing.title width=200)
+    
     input(type="submit" value="Save ->" class="button")
     
