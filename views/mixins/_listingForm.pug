@@ -1,14 +1,21 @@
 mixin listingForm(listing = {})
-  form(action="/add" method="POST" class="card")
+  form(action=`/add/${listing._id || ''}` method="POST" class="card")
     label(for="title") Title
-    input(type="text" name="title")
+    input(type="text" name="title" value=listing.title)
     label(for="description") Description
-    textarea(name="description")
+    textarea(name="description")=listing.description
+    label(for="address") Address
+    input(type="text" id="address" name="location[address]" value=(listing.location && listing.location.address))
+    label(for="lng") Address Lng
+    input(type="text" id="lng" name="location[coordinates[0]]" value=(listing.location && listing.location.coordinates[0]) required)
+    label(for="lat") Address Lat
+    input(type="text" id="lat" name="location[coordinates[1]]" value=(listing.location && listing.location.coordinates[1]) required)
     - const choices = ['Apartment', 'Single Home', 'Duplex']
+    - const tags = listing.tags || []
     ul.tags
       each choice in choices
         .tag.tag__choice
-          input(type="checkbox" id=choice value=choice name="tags")
+          input(type="checkbox" id=choice value=choice name="tags" checked=(tags.includes(choice)))
           label(for=choice) #{choice}
     input(type="submit" value="Save ->" class="button")
     
