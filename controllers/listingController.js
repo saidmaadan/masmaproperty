@@ -65,12 +65,22 @@ exports.updateListing = async (req, res) => {
     new: true,
     runValidators: true
   }).exec();
-  req.flash('success', `Successfully updated <strong>${listing.title}</strong>. <a href="/listings/${listing.slug}">View Listing -></a>`)
+  req.flash('success', `Successfully updated <strong>${listing.title}</strong>. <a href="/listing/${listing.slug}">View Listing -></a>`)
   res.redirect(`/listings/${listing._id}/edit`);
 };
 
-exports.getListingBySlug = async (req, res ) => {
+exports.getListingBySlug = async (req, res, next ) => {
   const listing = await Listing.findOne({slug: req.params.slug});
   if(!listing) return next();
   res.render('listing', { listing, title: listing.title});
 };
+
+exports.getListingsByTag = async (req, res) => {
+  const tag = req.params.tag;
+  const tagQuery = tag || { $exists: true };
+  const tagsPromise = Listing.getTagsList();
+  const listingsPromise = Listing.find({ tags: tagQuery });
+  const [tags, listings] = await Promise.all([tagsPromise, listingsPromise])
+
+  res.render('tag', {tags, title: 'Tags', tag, listings });
+}

@@ -10,6 +10,7 @@ block content
   .single__details.inner
     img.single__map(src=h.staticMap(listing.location.coordinates))
     p.single__location= listing.location.address
+    p= listing.description
     
     if listing.tags
       ul.tags

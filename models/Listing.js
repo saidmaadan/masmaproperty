@@ -37,13 +37,27 @@ const listingSchema = new mongoose.Schema({
     }
   }
 });
-listingSchema.pre('save', function(next){
+listingSchema.pre('save', async function(next){
   if (!this.isModified('title')){
     next();
     return;
   }
   this.slug = slug(this.title);
+  // find other listings with the same title as slug
+  const slugRegExp = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`, 'i');
+  const listingWithSlug = await this.constructor.find({slug: slugRegExp});
+  if(listingWithSlug.length){
+    this.slug = `${this.slug}-${listingWithSlug.length + 1}`
+  }
   next();
 });
+
+listingSchema.statics.getTagsList = function(){
+  return this.aggregate([
+    { $unwind: '$tags' },
+    { $group: { _id: '$tags', count: { $sum: 1} }},
+    { $sort: { count: -1 }}
+  ]);
+}
 
 module.exports = mongoose.model('Listing', listingSchema);

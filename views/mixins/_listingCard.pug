@@ -5,7 +5,7 @@ mixin listingCard(listing = {})
         .store__action.store__action--edit
           a(href=`/listings/${listing._id}/edit`)
             != h.icon('pencil')
-      img(src=`uploads/${listing.pic || 'store.png'}`)
+      img(src=`/uploads/${listing.pic || 'store.png'}`)
       h2.title
         a(href=`/listing/${listing.slug}`) #{listing.title}
     .store__details
