@@ -48,4 +48,10 @@ router.post('/reset/:token',
   catchErrors(authController.updatePassword)
 );
 
+/*
+  API
+*/
+
+router.get('/api/search', catchErrors(listingController.searchListings));
+
 module.exports = router;

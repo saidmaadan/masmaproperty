@@ -40,8 +40,7 @@ exports.resize = async (req, res, next) => {
 };
 
 exports.createListing = async (req, res) => {
-  // const listing = new Listing(req.body)
-  // await listing.save();
+  req.body.author = req.user._id;
   const listing = await (new Listing(req.body)).save(); //short cut
   req.flash('success', `Successfully Created ${listing.title}`);
   res.redirect(`/listing/${listing.slug}`);
@@ -52,8 +51,18 @@ exports.getListings  = async (req, res) => {
   res.render('listings', {title: "Listings", listings });
 };
 
+const confirmListingOwner = (listing, user) => {
+  if(!listing.author.equals(user._id)){
+    throw Error('Access Denied! You must be the owner to edit');
+  };
+  // req.flash('error', 'Access Denied! You must be the owner to edit');
+  // res.redirect('/');
+
+};
+
 exports.editListing  = async (req, res) => {
   const listing = await Listing.findOne({ _id: req.params.id });
+  confirmListingOwner(listing, req.user);
   res.render('editListing', {title: `Edit ${listing.title}`, listing });
 };
 
@@ -70,7 +79,7 @@ exports.updateListing = async (req, res) => {
 };
 
 exports.getListingBySlug = async (req, res, next ) => {
-  const listing = await Listing.findOne({slug: req.params.slug});
+  const listing = await Listing.findOne({slug: req.params.slug}).populate('author');
   if(!listing) return next();
   res.render('listing', { listing, title: listing.title});
 };
@@ -83,4 +92,12 @@ exports.getListingsByTag = async (req, res) => {
   const [tags, listings] = await Promise.all([tagsPromise, listingsPromise])
 
   res.render('tag', {tags, title: 'Tags', tag, listings });
+};
+
+exports.searchListings = async (req, res) => {
+  const listings = await Listing
+    .find({ $text: { $search: req.query.q }},{score: { $meta: 'textScore' }})
+    .sort({ score: { $meta: 'textScore' }})
+    .limit(6);
+    res.json(listings);
 }

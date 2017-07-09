@@ -20,6 +20,11 @@ const listingSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  author: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: 'You must supply an author'
+  },
   location: {
     type: {
       type: String,
@@ -35,8 +40,14 @@ const listingSchema = new mongoose.Schema({
       type: String,
       required: 'You must supply an address!'
     }
-  }
+  },
 });
+
+listingSchema.index({
+  title: 'text',
+  description: 'text'
+});
+
 listingSchema.pre('save', async function(next){
   if (!this.isModified('title')){
     next();
