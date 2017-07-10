@@ -43,7 +43,7 @@ function typeAhead(search){
   //handlle keyboard inputs
   searchInput.on('keyup', (e) => {
     //if not up, down and enter keys, do nothing
-    if(![38, 40, 13].include(e.keyCode)){
+    if(![38, 40, 13].includes(e.keyCode)){
       return;
     }
     const activeClass = 'search__result--active';
@@ -51,7 +51,7 @@ function typeAhead(search){
     const items = search.querySelectorAll('.search__result');
     let next;
     if(e.keyCode === 40 && current){
-      next = current.nextElementsibling || items[0];
+      next = current.nextElementSibling || items[0];
     } else if(e.keyCode === 40) {
       next = items[0];
     } else if (e.keyCode === 38 && current) {
@@ -59,7 +59,7 @@ function typeAhead(search){
     } else if (e.keyCode === 38) {
       next = items[items.length - 1];
     }else if(e.keyCode === 13 && current.href){
-      windo.location = current.href;
+      window.location = current.href;
       return;
     }
     if(current){

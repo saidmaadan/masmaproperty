@@ -45,8 +45,12 @@ const listingSchema = new mongoose.Schema({
 
 listingSchema.index({
   title: 'text',
-  description: 'text'
+  description: 'text',
+  location: 'text',
+  address: 'text'
 });
+
+listingSchema.index({location: '2dsphere'});
 
 listingSchema.pre('save', async function(next){
   if (!this.isModified('title')){

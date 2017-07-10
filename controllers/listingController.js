@@ -100,4 +100,25 @@ exports.searchListings = async (req, res) => {
     .sort({ score: { $meta: 'textScore' }})
     .limit(6);
     res.json(listings);
-}
+};
+
+exports.listingsMap = async (req,res) => {
+  const coordinates = [req.query.lng, req.query.lat].map(parseFloat);
+  const q = {
+    location: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates
+        },
+        $maxDistance: 100000 // 10Km
+      }
+    }
+  }
+  const listings = await Listing.find(q).select('slug title description pic location').limit(20);
+  res.json(listings);
+};
+
+exports.listingsMapPage = (req, res) => {
+  res.render('map', {title: 'Map'});
+};
