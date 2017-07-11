@@ -2,6 +2,13 @@ mixin listingCard(listing = {})
   .store
     .store__hero
       .store__actions
+        if user
+          .store__action.store__action--heart
+            form.heart(method="POST" action=`/api/listings/${listing.id}/favorite`)
+              - const favoriteStrings = user.favorites.map(obj => obj.toString())
+              - const favoriteClass = favoriteStrings.includes(listing._id.toString()) ? 'heart__button--hearted' : ''
+              button.heart__button(type="submit" name="favorite" class=favoriteClass)
+                != h.icon('heart')
         if user && listing.author.equals(user._id)
           .store__action.store__action--edit
             a(href=`/listings/${listing._id}/edit`)

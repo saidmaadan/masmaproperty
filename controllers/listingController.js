@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Listing = mongoose.model('Listing');
+const User = mongoose.model('User');
 const multer = require('multer');
 const jimp = require('jimp');
 const uuid = require('uuid');
@@ -121,4 +122,21 @@ exports.listingsMap = async (req,res) => {
 
 exports.listingsMapPage = (req, res) => {
   res.render('map', {title: 'Map'});
+};
+
+exports.favoriteListing = async (req, res) => {
+  const favorites = req.user.favorites.map(obj => obj.toString());
+  const operator = favorites.includes(req.params.id) ? '$pull' : '$addToSet';
+  const user = await User.findByIdAndUpdate(req.user._id,
+    { [operator]: {favorites: req.params.id }},
+    {new: true}
+  );
+  res.json(user);
+};
+
+exports.getfavorites = async (req, res) => {
+  const listings = await Listing.find({
+    _id: { $in: req.user.favorites }
+  });
+  res.render('listings', { title: "Favorites", listings})
 };

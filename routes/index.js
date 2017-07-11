@@ -49,6 +49,7 @@ router.post('/reset/:token',
 );
 
 router.get('/map', listingController.listingsMapPage);
+router.get('/favorites', authController.isLoggedIn, catchErrors(listingController.getfavorites));
 
 /*
   API
@@ -56,5 +57,6 @@ router.get('/map', listingController.listingsMapPage);
 
 router.get('/api/search', catchErrors(listingController.searchListings));
 router.get('/api/listings/near', catchErrors(listingController.listingsMap));
+router.post('/api/listings/:id/favorite', catchErrors(listingController.favoriteListing));
 
 module.exports = router;
