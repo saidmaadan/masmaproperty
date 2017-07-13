@@ -41,6 +41,7 @@ const listingSchema = new mongoose.Schema({
       required: 'You must supply an address!'
     }
   }
+
 },
 {
   toJSON: {virtuals: true},
@@ -79,11 +80,45 @@ listingSchema.statics.getTagsList = function(){
   ]);
 };
 
+listingSchema.statics.getTopListings = function(){
+  return this.aggregate([
+    //lookup for listings and populate their reviews
+    { $lookup: {
+      from: 'reviews',
+      localField: '_id',
+      foreignField: 'listing', as: 'reviews'
+     }
+   },
+   // filter for listings with 2 or more reviews
+   { $match: { 'reviews.1': { $exists: true }}},
+   // Add the average reviews field
+   { $project: {
+     pic: '$$ROOT.pic',
+     title: '$$ROOT.title',
+     reviews: '$$ROOT.reviews',
+     slug: '$$ROOT.slug',
+     averageRating: { $avg: '$reviews.rating' }
+   }},
+   // sort by highest reviews
+   { $sort: { averageRating: -1 }},
+   // limit to specific numbers
+   { $limit: 10 }
+ ]);
+}
+
 //find reviews where the listings _id property equal reviews listing property
 listingSchema.virtual('reviews', {
   ref: 'Review', //what model to link?
   localField: '_id', // which field on the listing?
   foreignField: 'listing' // which field on the review?
 });
+
+function autopopulate(next){
+  this.populate('reviews');
+  next();
+}
+
+listingSchema.pre('find', autopopulate);
+listingSchema.pre('findOne', autopopulate);
 
 module.exports = mongoose.model('Listing', listingSchema);

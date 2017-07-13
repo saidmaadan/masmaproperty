@@ -8,6 +8,7 @@ const { catchErrors } = require('../handlers/errorHandlers');
 // Do work here
 router.get('/', catchErrors(listingController.getListings));
 router.get('/listings', catchErrors(listingController.getListings));
+router.get('/listings/page/:page', catchErrors(listingController.getListings));
 router.get('/add', authController.isLoggedIn, listingController.addListing);
 
 router.post('/add',
@@ -51,7 +52,8 @@ router.post('/reset/:token',
 
 router.get('/map', listingController.listingsMapPage);
 router.get('/favorites', authController.isLoggedIn, catchErrors(listingController.getfavorites));
-router.post('/reviews/:id', authController.isLoggedIn, catchErrors(reviewController.addReview))
+router.post('/reviews/:id', authController.isLoggedIn, catchErrors(reviewController.addReview));
+router.get('/top', catchErrors(listingController.getTopListings));
 /*
   API
 */

@@ -48,8 +48,24 @@ exports.createListing = async (req, res) => {
 };
 
 exports.getListings  = async (req, res) => {
-  const listings = await Listing.find()
-  res.render('listings', {title: "Listings", listings });
+  const page = req.params.page || 1;
+  const limit = 4;
+  const skip = (page * limit) - limit;
+  const listingsPromise = Listing
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ created: 'desc'});
+
+  const countPromise = Listing.count();
+  const [listings, count] = await Promise.all([listingsPromise, countPromise]);
+  const pages = Math.ceil(count/limit);
+  if(!listings.length && skip){
+    req.flash('info', `Hey, the page ${page} you asked for doen't exist. So I redirect you to page ${pages}`);
+    res.redirect(`/listings/page/${pages}`);
+    return;
+  }
+  res.render('listings', {title: "Listings", listings, page, pages, count });
 };
 
 const confirmListingOwner = (listing, user) => {
@@ -139,4 +155,9 @@ exports.getfavorites = async (req, res) => {
     _id: { $in: req.user.favorites }
   });
   res.render('listings', { title: "Favorites", listings})
+};
+
+exports.getTopListings = async (req, res) => {
+  const listings = await Listing.getTopListings();
+  res.render('topListings', { listings, title: '⭐ Top Listings'});
 };

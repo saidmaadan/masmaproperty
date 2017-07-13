@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  .inner
+    h2 Top #{listings.length} Listings
+    table.table
+      thead
+        td pic
+        td ranking
+        td title
+        td reviews
+        td Average rating
+      each listing, i in listings
+        tr
+          td
+             a(href=`/listing/${listing.slug}`)
+               img(width=200 src=`/uploads/${listing.pic || 'store.png'}` alt=listing.title)
+          td #{i + 1}
+          td: a(href=`/listing/${listing.slug}`)= listing.title
+          td= listing.reviews.length
+          td #{Math.round(listing.averageRating * 10) / 10}/ 5
