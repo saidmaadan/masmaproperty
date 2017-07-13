@@ -80,7 +80,7 @@ exports.updateListing = async (req, res) => {
 };
 
 exports.getListingBySlug = async (req, res, next ) => {
-  const listing = await Listing.findOne({slug: req.params.slug}).populate('author');
+  const listing = await Listing.findOne({slug: req.params.slug}).populate('author reviews');
   if(!listing) return next();
   res.render('listing', { listing, title: listing.title});
 };

@@ -40,7 +40,11 @@ const listingSchema = new mongoose.Schema({
       type: String,
       required: 'You must supply an address!'
     }
-  },
+  }
+},
+{
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true}
 });
 
 listingSchema.index({
@@ -73,6 +77,13 @@ listingSchema.statics.getTagsList = function(){
     { $group: { _id: '$tags', count: { $sum: 1} }},
     { $sort: { count: -1 }}
   ]);
-}
+};
+
+//find reviews where the listings _id property equal reviews listing property
+listingSchema.virtual('reviews', {
+  ref: 'Review', //what model to link?
+  localField: '_id', // which field on the listing?
+  foreignField: 'listing' // which field on the review?
+});
 
 module.exports = mongoose.model('Listing', listingSchema);
